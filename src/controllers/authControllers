@@ -26,32 +26,27 @@ router.post('/signup', async (req, res, next) => {
 
     newUser.password = await newUser.encryptPassword(newUser.password);
     newUser.save()
+    return res.json({msg:"User Successfully Logged", newUser})
     // crear el token para el usuario con su ID
-    const token = jwt.sign({ id: newUser._id }, config.secret, {
-        expiresIn: 60 * 60 * 24
-    },
-        (err, token) => {
-            if (err) console.log(err);
-            res.cookie('token', token)
-            res.json({ msg: "User Successfully Logged in", token })
-        }
-    );
-
-
-    // res.json({ auth: true, token: token })
-
+    // const token = jwt.sign({ id: newUser._id }, config.secret, {
+    //     expiresIn: 60 * 60 * 24
+    // },
+    //     (err, token) => {
+    //         if (err) console.log(err);
+    //         res.cookie('token', token)
+    //         res.json({ msg: "User Successfully Logged in", token })
+    //     }
+    // );
 })
 
 router.get('/me', verifyToken, async (req, res, next) => {
 
-    // usar este ejemplo para evitar mostrar some data in the client such as 
-    // Password, email or other
-    // const user_found = await User.findById(req.userId, {password: 0, email: 0});
-    const user_found = await User.findById(req.userId);
+    const user_found = await User.findById(req.userId, {password: 0, email: 0});
+    // const user_found = await User.findById(req.userId);
     if (!user_found) {
         return res.status(404).send('User not found')
     }
-    res.json(user_found);
+    res.json({msg:"Estas son las notas", user_found});
 });
 
 //SI QUIERO TENER OTRA RUTA Y QUIERO HACER EL MISMO PROCESSO
@@ -100,6 +95,7 @@ router.post('/logout', (req, res, next) => {
         expires: new Date(0),
     });
     return res.status(200).json("Loggin out...")
+    
 })
 
 
